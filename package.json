@@ -1,0 +1,11 @@
+{
+  "name": "teste-tecnico-backend-nimbus",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "A Nimbus foi contratada para gerir alertas baseados na previsão climática de uma região. O alerta deve informar o evento (quantidade de chuva ou velocidade do vento, por exemplo) e o nível do impacto do evento na operação da contratante nessa região."
+}
