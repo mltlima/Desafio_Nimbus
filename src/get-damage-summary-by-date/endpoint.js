@@ -3,11 +3,11 @@ const controller = require('./controller');
 const execute = async (req, res) => {
     try {
         const { dateStart, dateEnd } = req.query;
-        
+
         const damageSummaries = await controller.execute(dateStart, dateEnd);
 
         // Se tudo estiver correto, envia a resposta com os sumários de danos
-        res.json({ data: damageSummaries });
+        res.json(damageSummaries);
     } catch (error) {
         // Se um erro for lançado, verifica o tipo e envia a resposta HTTP apropriada
         if (error.message.includes('required')) {

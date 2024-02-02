@@ -1,50 +1,49 @@
 const repository = require('./repository');
 
+// Função para gerar um array de todas as datas entre dois limites, garantindo que todas as datas no intervalo sejam consideradas
+function generateDateRange(start, end) {
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+
+    const dateRange = [];
+    for (let date = startDate; date <= endDate; date.setDate(date.getDate() + 1)) {
+        // Formata cada data para YYYY-MM-DD antes de adicionar ao array
+        dateRange.push(new Date(date).toISOString().split('T')[0]);
+    }
+    return dateRange;
+}
+
 module.exports = {
     async execute(dateStart, dateEnd) {
         const dbAlerts = await repository.execute(dateStart, dateEnd);
-        console.log('dbAlerts:', dbAlerts);
-        return dbAlerts
-            .reduce((result, alert) => {
-                const dateAlreadySummarized = result.find(({ date }) => date === alert.date);
-                const {
-                    damages: oldDamages,
-                    maxDamageEvent: oldMaxDamageEvent,
-                    minDamageEvent: oldMinDamageEvent,
-                } = { ...dateAlreadySummarized };
-                const date = alert.date;
-                const damages = (oldDamages || []).concat([alert.damage]);
-                let maxDamageEvent = alert;
-                if (oldMaxDamageEvent && oldMaxDamageEvent.damage > alert.damage) {
-                    maxDamageEvent = oldMaxDamageEvent;
-                }
-                let minDamageEvent;
-                if (oldMinDamageEvent && oldMinDamageEvent.damage < alert.damage) {
-                    minDamageEvent = oldMinDamageEvent;
-                }
-                minDamageEvent = alert;
+        // Gera um intervalo de datas para garantir a inclusão de todas as datas no intervalo especificado
+        const dateRange = generateDateRange(dateStart, dateEnd);
 
-                if (dateAlreadySummarized) {
-                    dateAlreadySummarized.damages = damages;
-                    dateAlreadySummarized.maxDamageEvent = maxDamageEvent;
-                    dateAlreadySummarized.minDamageEvent = minDamageEvent;
-                }
-                else {
-                    result.push({
-                        date,
-                        damages,
-                        maxDamageEvent,
-                        minDamageEvent,
-                    });
-                }
+        // Mapeia cada data para um resumo de danos, tratando dias com e sem eventos
+        const summarizedData = dateRange.map(date => {
+            // Filtra alertas para a data atual, permitindo a comparação direta com a string da data
+            const alertsForDate = dbAlerts.filter(alert => alert.date.toISOString().split('T')[0] === date);
+            // Extrai os valores de dano para cálculo
+            const damages = alertsForDate.map(alert => alert.damage);
 
-                return result;
-            }, [])
-            .sort((a, b) => b.date.localeCompare(a.date))
-            .forEach(summary => {
-                summary.avgDamage = summary.damages.reduce((result, damage) => result+damage, 0);
-                delete summary.damages;
-                return summary;
-            });
+            // Calcula o dano total e a média de danos para a data atual
+            const totalDamage = damages.reduce((acc, cur) => acc + cur, 0, 0);
+            const avgDamage = damages.length > 0 ? totalDamage / damages.length : 0;
+
+            // Identifica os eventos de dano máximo e mínimo, se existirem
+            const maxDamageEvent = damages.length > 0 ? alertsForDate.reduce((max, alert) => max.damage > alert.damage ? max : alert) : null;
+            const minDamageEvent = damages.length > 0 ? alertsForDate.reduce((min, alert) => min.damage < alert.damage ? min : alert) : null;
+
+            // Retorna o resumo para a data atual, incluindo tratamento para datas sem eventos
+            return {
+                date,
+                avgDamage,
+                maxDamageEvent: maxDamageEvent ? { event: maxDamageEvent.event, damage: maxDamageEvent.damage } : null,
+                minDamageEvent: minDamageEvent ? { event: minDamageEvent.event, damage: minDamageEvent.damage } : null,
+            };
+        });
+
+        // Retorna os dados resumidos, já encapsulados em um objeto para padronizar a estrutura de resposta
+        return { data: summarizedData };
     },
 };
