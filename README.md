@@ -85,3 +85,43 @@ Quem vai revisar a solução deve rodar, no MÁXIMO, 3 comandos para testar a so
 - Setup do banco de dados
 - Rodar a aplicação (npm install && npm start)
 - Executar a requisição para o endpoint
+
+
+
+
+
+
+
+
+
+# Nome do Projeto
+
+Este é um projeto de backend para uma aplicação de gerenciamento de alertas climáticos.
+
+## Pré-requisitos
+
+- Node.js
+- npm ou yarn
+- Um banco de dados PostgreSQL, MySQL, MariaDB, SQLite ou SQL Server
+
+## Configuração Inicial
+
+Clone o repositório para sua máquina local usando `git clone`, depois navegue até o diretório do projeto.
+
+Instale as dependências necessárias com `npm install`.
+
+## Configuração do Banco de Dados
+
+Defina a string de conexão do banco de dados no arquivo `.env` na raiz do projeto:
+
+```plaintext
+DATABASE_URL="sua_string_de_conexao_com_o_banco_de_dados"
+
+
+npx prisma migrate dev
+
+
+node prisma/seed.js
+
+
+npm start
