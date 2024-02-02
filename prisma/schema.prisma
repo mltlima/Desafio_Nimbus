@@ -11,8 +11,8 @@ datasource db {
 }
 
 model Alert {
-  id     Int    @id @default(autoincrement())
-  date   String
+  id     Int      @id @default(autoincrement())
+  date   DateTime
   event  String
   damage Int
 }

@@ -3,7 +3,7 @@ const repository = require('./repository');
 module.exports = {
     async execute(dateStart, dateEnd) {
         const dbAlerts = await repository.execute(dateStart, dateEnd);
-
+        console.log('dbAlerts:', dbAlerts);
         return dbAlerts
             .reduce((result, alert) => {
                 const dateAlreadySummarized = result.find(({ date }) => date === alert.date);

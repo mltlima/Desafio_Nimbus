@@ -6,7 +6,11 @@ const alertsData = require('../data/alerts.json');
 async function main() {
   for (const alert of alertsData) {
     await prisma.alert.create({
-      data: alert,
+      data: {
+        date: new Date(alert.date + "T00:00:00.000Z"),
+        event: alert.event,
+        damage: alert.damage,
+      }
     });
   }
 }
