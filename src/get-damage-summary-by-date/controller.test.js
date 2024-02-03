@@ -187,4 +187,33 @@ describe('Controller execute function scenarios', () => {
           ]
       });
   });
+
+  // 6. Data de início é depois da data de término
+    test('should throw an error when the start date is after the end date', async () => {
+
+        repository.execute.mockResolvedValue([
+            { date: new Date('2023-12-22'), event: 'Chuva forte', damage: 80 },
+            { date: new Date('2023-12-22'), event: 'Vento forte', damage: 60 },
+        ]);
+
+        const dateStart = '2023-12-25';
+        const dateEnd = '2023-12-22';
+        
+        await expect(controller.execute(dateStart, dateEnd)).rejects.toThrow('Invalid date range: start date is after end date.');
+    });
+
+    // 7. Formato de data inválido
+    test('should throw an error when the date format is invalid', async () => {
+
+        repository.execute.mockResolvedValue([
+            { date: new Date('2023-12-22'), event: 'Chuva forte', damage: 80 },
+            { date: new Date('2023-12-22'), event: 'Vento forte', damage: 60 },
+        ]);
+
+        const dateStart = '2023-12-33';
+        const dateEnd = '2023-12-40';
+        
+        await expect(controller.execute(dateStart, dateEnd)).rejects.toThrow('Invalid date format');
+    });
+
 });  

@@ -13,8 +13,24 @@ function generateDateRange(start, end) {
     return dateRange;
 }
 
+// Função para validar o formato de uma data
+function isValidDate(dateString) {
+    const date = new Date(dateString);
+    return !isNaN(date.getTime());
+}
+
 module.exports = {
     async execute(dateStart, dateEnd) {
+
+        if (!isValidDate(dateStart) || !isValidDate(dateEnd)) {
+            throw new Error('Invalid date format');
+        }
+
+        // Validando o intervalo de datas
+        if (new Date(dateStart) > new Date(dateEnd)) {
+            throw new Error('Invalid date range: start date is after end date.');
+        }
+
         const dbAlerts = await repository.execute(dateStart, dateEnd);
         // Gera um intervalo de datas para garantir a inclusão de todas as datas no intervalo especificado
         const dateRange = generateDateRange(dateStart, dateEnd);
