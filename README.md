@@ -35,3 +35,11 @@ exemplo de requisição
 ## Testes
 
 `npm test`
+
+## Docker
+
+Rodar aplicação no docker com somente um comando
+
+Adicionar as variáveis de acordo com o .env.example no arquivo `.env`
+
+`docker-compose up --build`
